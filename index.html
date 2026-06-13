@@ -1,12 +1,915 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Web App</title>
-    <style>body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }</style>
+    <title>M1RESI - Master 1 Réseau & Système | ISIGROUPE</title>
+    <!-- Font Awesome 6 (icônes) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --surface: #111827;
+            --surface-2: #1a1f2e;
+            --accent: #00c6ff;
+            --accent-2: #0072ff;
+            --accent-glow: rgba(0, 198, 255, 0.35);
+            --gold: #f0b90b;
+            --text: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --border: #1e293b;
+            --radius: 14px;
+            --radius-sm: 8px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============ ANIMATED NETWORK BACKGROUND ============ */
+        #network-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.25;
+        }
+
+        /* ============ NAVIGATION ============ */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            transition: var(--transition);
+        }
+
+        nav.scrolled {
+            padding: 0.7rem 2rem;
+            background: rgba(10, 14, 23, 0.92);
+            box-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+        .nav-logo .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.8rem;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.3rem 0;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+            border-radius: 2px;
+        }
+        .nav-links a:hover {
+            color: #fff;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        .btn-nav {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff !important;
+            padding: 0.55rem 1.3rem !important;
+            border-radius: 25px;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+            box-shadow: 0 4px 18px var(--accent-glow);
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-nav:hover {
+            box-shadow: 0 6px 28px rgba(0, 198, 255, 0.55);
+            transform: translateY(-2px);
+        }
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1001;
+        }
+        .menu-toggle span {
+            display: block;
+            width: 26px;
+            height: 2.5px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        /* ============ HERO SECTION ============ */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+        }
+        .hero-content {
+            max-width: 800px;
+            animation: fadeInUp 1s ease forwards;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(0, 198, 255, 0.1);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            color: var(--accent);
+            padding: 0.45rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(6px);
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 60%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero h2 {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        .hero .school-name {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat .number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+        }
+        .hero-stat .number.highlight {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-stat .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .btn-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            padding: 0.85rem 2.2rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            box-shadow: 0 8px 32px var(--accent-glow);
+            transition: var(--transition);
+            letter-spacing: 0.02em;
+            margin-top: 0.5rem;
+        }
+        .btn-hero:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(0, 198, 255, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============ SECTIONS ============ */
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 5rem 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+        .section-header .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.6rem;
+        }
+        .section-header h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0.7rem auto 0;
+            font-size: 1rem;
+        }
+
+        /* ============ ABOUT / PROGRAM CARD ============ */
+        .program-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+        .program-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .program-card::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            filter: blur(45px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .program-card:hover::before {
+            opacity: 0.5;
+        }
+        .program-card:hover {
+            border-color: rgba(0, 198, 255, 0.4);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+        .program-card .icon {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        .program-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .program-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ============ STUDENT ROSTER ============ */
+        .roster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 0.8rem;
+            justify-items: center;
+        }
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            cursor: default;
+            position: relative;
+            text-transform: uppercase;
+        }
+        .student-avatar:hover {
+            border-color: var(--accent);
+            color: #fff;
+            transform: scale(1.1);
+            box-shadow: 0 6px 22px var(--accent-glow);
+            z-index: 2;
+        }
+        .student-name-tooltip {
+            position: absolute;
+            bottom: -28px;
+            background: var(--surface);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            font-weight: 500;
+            text-transform: none;
+            border: 1px solid var(--border);
+        }
+        .student-avatar:hover .student-name-tooltip {
+            opacity: 1;
+            bottom: -34px;
+        }
+        .roster-count-badge {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        /* ============ SKILLS / TECH BADGES ============ */
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .tech-badge {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1.1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+            transition: var(--transition);
+            cursor: default;
+        }
+        .tech-badge:hover {
+            border-color: var(--accent);
+            background: rgba(0, 198, 255, 0.08);
+            color: #fff;
+        }
+
+        /* ============ CTA BANNER ============ */
+        .cta-banner {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-banner::after {
+            content: '';
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            filter: blur(80px);
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        .cta-banner h3 {
+            font-size: 1.6rem;
+            color: #fff;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .cta-banner p {
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+            margin: 0.6rem 0 1.5rem;
+        }
+        .cta-banner .btn-hero {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============ FOOTER ============ */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2.5rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        footer strong {
+            color: #fff;
+        }
+        footer .accent-dot {
+            color: var(--accent);
+            margin: 0 0.3rem;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 260px;
+                height: 100vh;
+                background: var(--surface);
+                flex-direction: column;
+                padding: 5rem 2rem;
+                gap: 1.5rem;
+                transition: var(--transition);
+                border-left: 1px solid var(--border);
+                box-shadow: -8px 0 30px rgba(0, 0, 0, 0.6);
+            }
+            .nav-links.active {
+                right: 0;
+            }
+            .menu-toggle {
+                display: flex;
+            }
+            .hero-stats {
+                gap: 1.5rem;
+            }
+            .hero-stat .number {
+                font-size: 2rem;
+            }
+            .roster-grid {
+                grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+                gap: 0.5rem;
+            }
+            .student-avatar {
+                width: 48px;
+                height: 48px;
+                font-size: 0.8rem;
+            }
+            section {
+                padding: 3rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 6rem 1rem 3rem;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .program-grid {
+                grid-template-columns: 1fr;
+            }
+            .roster-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            .student-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello! This is index.html served by app.js</h1>
+
+    <!-- ==================== NETWORK CANVAS BACKGROUND ==================== -->
+    <canvas id="network-bg"></canvas>
+
+    <!-- ==================== NAVIGATION ==================== -->
+    <nav id="navbar">
+        <a href="#" class="nav-logo">
+            <span class="logo-icon">IS</span>
+            <span>ISIGROUPE</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about">Programme</a></li>
+            <li><a href="#roster">Promotion</a></li>
+            <li><a href="#skills">Compétences</a></li>
+            <li><a href="#contact" class="btn-nav"><i class="fas fa-envelope"></i> Nous Contacter</a></li>
+        </ul>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <span class="hero-badge"><i class="fas fa-graduation-cap"></i> Promotion 2025-2026</span>
+            <p class="school-name">ISIGROUPE</p>
+            <h1>Master 1<br>Réseau & Système</h1>
+            <h2>M1RESI — Une promotion d'excellence de <strong>30 étudiants</strong> passionnés par l'infrastructure IT</h2>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="number highlight">30</span>
+                    <span class="label">Étudiants</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="number">2</span>
+                    <span class="label">Semestres</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="number highlight">15+</span>
+                    <span class="label">Modules</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="number">1</span>
+                    <span class="label">Promo Soudée</span>
+                </div>
+            </div>
+            <a href="#roster" class="btn-hero"><i class="fas fa-search"></i> Découvrir la promotion</a>
+        </div>
+    </section>
+
+    <!-- ==================== ABOUT PROGRAM ==================== -->
+    <section id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="tag"><i class="fas fa-book-open"></i> Le Programme</span>
+                <h2>M1RESI, c'est quoi ?</h2>
+                <p>Le Master 1 Réseau & Système forme les futurs experts en administration réseau, virtualisation, cloud et cybersécurité au sein de l'ISIGROUPE.</p>
+            </div>
+            <div class="program-grid">
+                <div class="program-card">
+                    <div class="icon"><i class="fas fa-network-wired"></i></div>
+                    <h3>Réseaux Avancés</h3>
+                    <p>Protocoles, routage dynamique, SDN, VLANs, VPNs — maîtrisez l'infrastructure réseau de bout en bout.</p>
+                </div>
+                <div class="program-card">
+                    <div class="icon"><i class="fas fa-server"></i></div>
+                    <h3>Administration Système</h3>
+                    <p>Linux, Windows Server, scripting Bash/PowerShell, gestion des services et annuaires LDAP/Active Directory.</p>
+                </div>
+                <div class="program-card">
+                    <div class="icon"><i class="fas fa-cloud"></i></div>
+                    <h3>Cloud & Virtualisation</h3>
+                    <p>Docker, Kubernetes, VMware, Proxmox, AWS/Azure — déployez et orchestrez des infrastructures hybrides.</p>
+                </div>
+                <div class="program-card">
+                    <div class="icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Cybersécurité</h3>
+                    <p>Pare-feux, IDS/IPS, pentesting, durcissement, normes ISO 27001 — sécurisez les systèmes d'information.</p>
+                </div>
+                <div class="program-card">
+                    <div class="icon"><i class="fas fa-satellite-dish"></i></div>
+                    <h3>Télécoms & IoT</h3>
+                    <p>Réseaux mobiles, 5G, objets connectés, protocoles MQTT/CoAP — l'avenir des télécommunications.</p>
+                </div>
+                <div class="program-card">
+                    <div class="icon"><i class="fas fa-rocket"></i></div>
+                    <h3>Projets & Labs</h3>
+                    <p>Travaux pratiques intensifs, projets collaboratifs, stages en entreprise — une formation résolument concrète.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== STUDENT ROSTER ==================== -->
+    <section id="roster">
+        <div class="container">
+            <div class="section-header">
+                <span class="tag"><i class="fas fa-users"></i> La Promotion</span>
+                <h2>30 Étudiants — Une Équipe</h2>
+                <p>Voici les visages (et initiales !) de la promotion M1RESI. Passez la souris pour découvrir chaque nom.</p>
+            </div>
+            <div class="roster-grid" id="rosterGrid">
+                <div class="roster-count-badge"><i class="fas fa-bullseye"></i> <strong>30 étudiants</strong> — Promotion M1RESI 2025-2026</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SKILLS / TECH BADGES ==================== -->
+    <section id="skills">
+        <div class="container">
+            <div class="section-header">
+                <span class="tag"><i class="fas fa-tools"></i> Technologies Maîtrisées</span>
+                <h2>Notre Stack Technique</h2>
+                <p>Au cours du M1RESI, chaque étudiant développe des compétences sur les outils et technologies les plus demandés du marché.</p>
+            </div>
+            <div class="tech-badges">
+                <span class="tech-badge">Linux (Debian/Ubuntu/RHEL)</span>
+                <span class="tech-badge">Windows Server</span>
+                <span class="tech-badge">Cisco IOS</span>
+                <span class="tech-badge">Docker</span>
+                <span class="tech-badge">Kubernetes</span>
+                <span class="tech-badge">VMware ESXi</span>
+                <span class="tech-badge">Proxmox VE</span>
+                <span class="tech-badge">Ansible</span>
+                <span class="tech-badge">Terraform</span>
+                <span class="tech-badge">AWS / Azure</span>
+                <span class="tech-badge">GNS3 / Packet Tracer</span>
+                <span class="tech-badge">Wireshark</span>
+                <span class="tech-badge">pfSense</span>
+                <span class="tech-badge">Git / GitHub</span>
+                <span class="tech-badge">Python</span>
+                <span class="tech-badge">Bash / PowerShell</span>
+                <span class="tech-badge">MySQL / PostgreSQL</span>
+                <span class="tech-badge">Prometheus / Grafana</span>
+                <span class="tech-badge">NGINX / Apache</span>
+                <span class="tech-badge">OpenVPN / WireGuard</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CTA BANNER ==================== -->
+    <section id="contact">
+        <div class="container">
+            <div class="cta-banner">
+                <h3><i class="fas fa-paper-plane"></i> Vous souhaitez en savoir plus ?</h3>
+                <p>Contactez l'ISIGROUPE pour toute question sur le Master M1RESI ou pour collaborer avec notre promotion.</p>
+                <a href="mailto:contact@isigroupe.com" class="btn-hero"><i class="fas fa-envelope"></i> Envoyer un email</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer>
+        <p>&copy; 2025 <strong>ISIGROUPE</strong> — Master 1 Réseau & Système <span class="accent-dot"><i class="fas fa-circle" style="font-size: 0.4rem; vertical-align: middle;"></i></span> M1RESI <span class="accent-dot"><i class="fas fa-circle" style="font-size: 0.4rem; vertical-align: middle;"></i></span> 30 étudiants. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        // ============ NETWORK BACKGROUND ANIMATION ============
+        (function() {
+            const canvas = document.getElementById('network-bg');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const PARTICLE_COUNT = 55;
+            const CONNECTION_DIST = 130;
+            let animationId;
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', () => {
+                resize();
+                initParticles();
+            });
+
+            class Particle {
+                constructor() {
+                    this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.6;
+                    this.vy = (Math.random() - 0.5) * 0.6;
+                    this.radius = Math.random() * 2.2 + 1;
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < -20) this.x = canvas.width + 20;
+                    if (this.x > canvas.width + 20) this.x = -20;
+                    if (this.y < -20) this.y = canvas.height + 20;
+                    if (this.y > canvas.height + 20) this.y = -20;
+                }
+                draw(ctx) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0,198,255,${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const p = new Particle();
+                    p.x = Math.random() * canvas.width;
+                    p.y = Math.random() * canvas.height;
+                    particles.push(p);
+                }
+            }
+
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < CONNECTION_DIST) {
+                            const alpha = (1 - dist / CONNECTION_DIST) * 0.25;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(0,180,240,${alpha})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw(ctx);
+                });
+                drawConnections();
+                animationId = requestAnimationFrame(animate);
+            }
+
+            resize();
+            initParticles();
+            animate();
+
+            window.addEventListener('beforeunload', () => {
+                cancelAnimationFrame(animationId);
+            });
+        })();
+
+        // ============ NAVIGATION ============
+        const navbar = document.getElementById('navbar');
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // ============ GENERATE STUDENT ROSTER ============
+        const studentNames = [
+            'Ahmed Benali', 'Aïcha Diallo', 'Amine Toumi', 'Aurélie Dubois', 'Bastien Moreau',
+            'Camille Roux', 'Chloé Lambert', 'David Ndiaye', 'Elodie Fontaine', 'Emmanuel Koffi',
+            'Fatima Zahra', 'Gabriel Perrin', 'Hanaé Mansouri', 'Hugo Lefebvre', 'Inès Bouzid',
+            'Jordan Mbuyi', 'Julie Garnier', 'Karim Saïdi', 'Léa Fournier', 'Lucas Chevalier',
+            'Mélissa Yao', 'Mohamed Traoré', 'Nicolas Petit', 'Océane Girard', 'Pierre Dumont',
+            'Rania Belkacem', 'Samuel Kouassi', 'Sarah Vincent', 'Thomas Renaud', 'Yasmine Cherif'
+        ];
+
+        const rosterGrid = document.getElementById('rosterGrid');
+        const badge = rosterGrid.querySelector('.roster-count-badge');
+        rosterGrid.innerHTML = '';
+        if (badge) rosterGrid.appendChild(badge);
+
+        studentNames.forEach(name => {
+            const initials = name
+                .split(' ')
+                .map(w => w[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2);
+            const avatar = document.createElement('div');
+            avatar.className = 'student-avatar';
+            avatar.innerHTML = `${initials}<span class="student-name-tooltip">${name}</span>`;
+            const hue = (name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360);
+            avatar.style.background = `linear-gradient(135deg, hsl(${hue},50%,18%), hsl(${(hue+30)%360},40%,12%))`;
+            avatar.style.borderColor = `hsla(${hue},60%,50%,0.3)`;
+            rosterGrid.appendChild(avatar);
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        console.log('🚀 M1RESI Landing Page — ISIGROUPE — 30 étudiants prêts à transformer le monde des réseaux & systèmes !');
+    </script>
 </body>
 </html>
